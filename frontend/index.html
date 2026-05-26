@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Servicios Cloud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+
+    <div class="bg-gray-800 border border-gray-700 p-8 rounded-xl shadow-2xl w-full max-w-lg">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-bold tracking-wider text-blue-400">Cloud Architecture UI</h1>
+            <span class="bg-blue-900 text-blue-300 text-xs font-semibold px-2.5 py-0.5 rounded border border-blue-700">v1.0.0</span>
+        </div>
+        
+        <p class="text-gray-400 text-sm mb-6">Monitoreo en tiempo real de la Capa Lógica (Docker Backend).</p>
+        
+        <div class="bg-gray-900 rounded-lg p-5 border border-gray-700 shadow-inner">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-sm font-medium text-gray-400">Estado de Conexión:</span>
+                <span id="estado-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-yellow-900 text-yellow-300 border border-yellow-700 animate-pulse">
+                    PENDIENTE...
+                </span>
+            </div>
+
+            <div class="mt-4">
+                <span class="text-sm font-medium text-gray-400">Respuesta del API REST:</span>
+                <div class="mt-2 bg-black p-4 rounded border border-gray-700 font-mono text-sm overflow-x-auto h-24 flex items-center">
+                    <span id="mensaje" class="text-gray-500">Iniciando handshake con el servidor remoto...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Aquí pondremos la URL de tu contenedor de Render después
+        const urlBackend = 'https://AQUI_IRA_LA_URL_DE_RENDER/api/health'; 
+        
+        fetch(urlBackend)
+            .then(response => response.json())
+            .then(data => {
+                // Cambia la etiqueta a ONLINE (Verde)
+                const badge = document.getElementById('estado-badge');
+                badge.innerText = "ONLINE";
+                badge.classList.remove('bg-yellow-900', 'text-yellow-300', 'border-yellow-700', 'animate-pulse');
+                badge.classList.add('bg-green-900', 'text-green-400', 'border-green-700');
+                
+                // Muestra el JSON de la API en color hacker (verde)
+                const msgBox = document.getElementById('mensaje');
+                msgBox.classList.replace('text-gray-500', 'text-green-400');
+                msgBox.innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                // Cambia la etiqueta a OFFLINE (Rojo)
+                const badge = document.getElementById('estado-badge');
+                badge.innerText = "OFFLINE";
+                badge.classList.remove('bg-yellow-900', 'text-yellow-300', 'border-yellow-700', 'animate-pulse');
+                badge.classList.add('bg-red-900', 'text-red-400', 'border-red-700');
+                
+                // Muestra el error
+                const msgBox = document.getElementById('mensaje');
+                msgBox.classList.replace('text-gray-500', 'text-red-500');
+                msgBox.innerText = "ERROR 503: Fallo de conexión con el contenedor.";
+            });
+    </script>
+</body>
+</html>
